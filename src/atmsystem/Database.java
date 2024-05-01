@@ -77,14 +77,46 @@ public class Database {
         }
     }
 
-    public void closeConnection() {
+    public boolean authenticateUser(String accountNumber, int pin) {
         try {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-                System.out.println("Database connection closed.");
+            String query = "SELECT pin FROM users WHERE account_number = ?";
+            try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+                pstmt.setString(1, accountNumber);
+                ResultSet rs = pstmt.executeQuery();
+                if (rs.next()) {
+                    int storedPin = rs.getInt("pin");
+                    return storedPin == pin;
+                } else {
+                    return false; // Account number not found
+                }
             }
         } catch (SQLException e) {
-            System.out.println("Error closing database connection: " + e.getMessage());
+            System.out.println("Error authenticating user: " + e.getMessage());
+            return false;
         }
     }
+    
+    public int getUserIdByAccountNumber(String accountNumber) {
+        int userId = -1;
+        try {
+            String query = "SELECT id FROM users WHERE account_number = ?";
+            try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+                pstmt.setString(1, accountNumber);
+                ResultSet rs = pstmt.executeQuery();
+                if (rs.next()) {
+                    userId = rs.getInt("id");
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching user ID: " + e.getMessage());
+        }
+        return userId;
+    }
+
+    public void closeConnection() throws SQLException {
+        if (connection != null) {
+            connection.close();
+        }
+    }
+
 }
