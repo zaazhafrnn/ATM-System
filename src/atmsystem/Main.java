@@ -8,29 +8,38 @@ package atmsystem;
  *
  * @author aza
  */
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Scanner;
-import java.util.ArrayList;
-import java.util.List;
-import atmsystem.Transaction;
 
 public class Main {
     public static void main(String[] args) {
+        Database dbManager = new Database("jdbc:mysql://localhost:3306/atm_database", "atm_user", "root");
+
+        String name = "";
+        double balance = 0.0;
+        try {
+            name = dbManager.getUserName(1); // Assuming user ID 1 for simplicity
+            balance = dbManager.getBalance(1); // Assuming user ID 1 for simplicity
+        } catch (SQLException e) {
+            System.out.println("Error fetching user data: " + e.getMessage());
+            System.exit(1);
+        }
+
+        System.out.println("\nHello " + name + "! Welcome to the ATM system.");
+        System.out.println("Your current balance is: $" + balance);
+
+        Connection conn = dbManager.getConnection();
         Scanner scanner = new Scanner(System.in);
-
-        System.out.print("Enter your name: ");
-        String name = scanner.nextLine();
-
-        System.out.print("Enter your initial balance: $");
-        double initialBalance = scanner.nextDouble();
-
-        BankAccount account = new BankAccount(initialBalance);
+        BankAccount account = new BankAccount(conn);
 
         while (true) {
-            System.out.println("\nHalo " + name + ", selamat datang!");
             System.out.println("\nChoose an option:");
             System.out.println("1. Check Balance");
-            System.out.println("2. Withdraw Money");
-            System.out.println("3. Deposit Money");
+            System.out.println("2. Deposit Money");
+            System.out.println("3. Withdraw Money");
             System.out.println("4. View Transaction History");
             System.out.println("5. Exit");
             System.out.print("\nYour input: ");
@@ -42,37 +51,22 @@ public class Main {
                     account.checkBalance();
                     break;
                 case 2:
-                    account.withdraw(scanner);
-                    break;
-                case 3:
                     account.deposit(scanner);
                     break;
+                case 3:
+                    account.withdraw(scanner);
+                    break;
                 case 4:
-                    viewTransactionHistory(account);
+                     account.viewTransactionHistory();
                     break;
                 case 5:
                     System.out.println("Exiting program. Thank you!");
                     scanner.close();
+                    dbManager.closeConnection();
                     System.exit(0);
                 default:
                     System.out.println("Invalid choice. Please choose again.");
             }
-        }
-    }
-    
-    private static void viewTransactionHistory(BankAccount account) {
-        List<Transaction> transactions = account.getTransactions();
-        if (transactions.isEmpty()) {
-            System.out.println("\nNo transactions to display.");
-        } else {
-            System.out.println("\nTransaction History:");
-            for (Transaction transaction : transactions) {
-                System.out.println("Type: " + transaction.getType());
-                System.out.println("Amount: $" + transaction.getAmount());
-                System.out.println("Timestamp: " + transaction.getTimestamp());
-                System.out.println();
-            }
-            account.checkBalance();
         }
     }
 }
