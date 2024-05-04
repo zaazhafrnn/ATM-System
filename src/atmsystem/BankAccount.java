@@ -11,12 +11,14 @@ public class BankAccount {
     private double balance;
     private List<Transaction> transactions;
     private Database dbManager;
+    private int transactionIdCounter;
 
     public BankAccount(Database dbManager, int userId) {
         this.dbManager = dbManager;
         this.userId = userId;
         balance = dbManager.getBalance(userId);
         transactions = new ArrayList<>();
+        transactionIdCounter = 1;
     }
 
     public void checkBalance() {
@@ -33,12 +35,14 @@ public class BankAccount {
             System.out.println("Transaction cancelled.");
             return;
         }
+        
+        int transactionId = generateTransactionId();
 
         balance += amount;
-        transactions.add(new Transaction("Deposit", amount, LocalDateTime.now()));
+        transactions.add(new Transaction(transactionId, "Deposit", amount, LocalDateTime.now()));
 
         dbManager.updateBalanceDatabase(userId, balance);
-        dbManager.addHistoryTransaction(userId, "Deposit", amount, LocalDateTime.now());
+        dbManager.addHistoryTransaction(transactionId, userId, "Deposit", amount, LocalDateTime.now());
 
 
         System.out.println("Deposit successful. Your balance right now: $" + balance);
@@ -55,12 +59,15 @@ public class BankAccount {
             return;
         }
 
+        int transactionId = generateTransactionId();
+            
         if (amount <= balance) {
             balance -= amount;
-            transactions.add(new Transaction("Withdrawal", amount, LocalDateTime.now()));
+            transactions.add(new Transaction(transactionId, "Withdrawal", amount, LocalDateTime.now()));
+            
 
             dbManager.updateBalanceDatabase(userId, balance);
-            dbManager.addHistoryTransaction(userId, "Withdrawal", amount, LocalDateTime.now());
+            dbManager.addHistoryTransaction(transactionId, userId, "Withdrawal", amount, LocalDateTime.now());
 
             System.out.println("Withdrawal successful. Your remaining balance: $" + balance);
         } else {
@@ -72,6 +79,8 @@ public class BankAccount {
         checkBalance();
         System.out.print("\nEnter the recipient's account number: ");
         String recipientAccountNumber = scanner.nextLine();
+        int transactionId = generateTransactionId();
+
 
         int recipientUserId = dbManager.getUserIdByAccountNumber(recipientAccountNumber);
         if (recipientUserId != -1) {
@@ -97,18 +106,20 @@ public class BankAccount {
                     System.out.println("Transfer cancelled.");
                     return;
                 }
-
+                
                 if (amount <= balance) {
                     balance -= amount;
                     dbManager.updateBalanceDatabase(userId, balance);
+                    dbManager.addHistoryTransaction(transactionId, userId, "Transfer to " + recipientName, amount, LocalDateTime.now());
                     
                     double recipientBalance = dbManager.getBalance(recipientUserId);
                     recipientBalance += amount;
                     dbManager.updateBalanceDatabase(recipientUserId, recipientBalance);
+                    dbManager.addHistoryTransaction(transactionId, recipientUserId, "Transfer from " + dbManager.getUserName(userId), amount, LocalDateTime.now());
 
                     
-                    dbManager.addHistoryTransaction(userId, "Transfer to " + recipientName, amount, LocalDateTime.now());
-                    dbManager.addHistoryTransaction(recipientUserId, "Transfer from " + dbManager.getUserName(userId), amount, LocalDateTime.now());
+//                    dbManager.addHistoryTransaction(userId, "Transfer to " + recipientName, amount, LocalDateTime.now());
+//                    dbManager.addHistoryTransaction(recipientUserId, "Transfer from " + dbManager.getUserName(userId), amount, LocalDateTime.now());
 
                     System.out.println("Transfer successful. $" + amount + " transferred to account number: " + recipientAccountNumber);
                 } else {
@@ -147,5 +158,10 @@ public class BankAccount {
             scanner.close();
         }
     }
+    
+    private int generateTransactionId() {
+        return transactionIdCounter++;
+    }
+
 
 }

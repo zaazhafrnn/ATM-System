@@ -67,13 +67,14 @@ public class Database {
         }
     }
 
-    public void addHistoryTransaction(int userId, String type, double amount, LocalDateTime timestamp) {
+    public void addHistoryTransaction(int transactionId, int userId, String type, double amount, LocalDateTime timestamp) {
         try {
-            PreparedStatement pstmt = connection.prepareStatement("INSERT INTO transactions (user_id, type, amount, timestamp) VALUES (?, ?, ?, ?)");
-            pstmt.setInt(1, userId);
-            pstmt.setString(2, type);
-            pstmt.setDouble(3, amount);
-            pstmt.setObject(4, timestamp);
+            PreparedStatement pstmt = connection.prepareStatement("INSERT INTO transactions (transaction_id, user_id, type, amount, timestamp) VALUES (?, ?, ?, ?, ?)");
+            pstmt.setInt(1, transactionId);
+            pstmt.setInt(2, userId);
+            pstmt.setString(3, type);
+            pstmt.setDouble(4, amount);
+            pstmt.setObject(5, timestamp);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Error adding transaction to database: " + e.getMessage());
@@ -156,7 +157,8 @@ public class Database {
                 String type = rs.getString("type");
                 double amount = rs.getDouble("amount");
                 LocalDateTime timestamp = rs.getObject("timestamp", LocalDateTime.class);
-                transactions.add(new Transaction(type, amount, timestamp));
+                int transactionId = 0;
+                transactions.add(new Transaction(transactionId, type, amount, timestamp));
             }
         } catch (SQLException e) {
             System.out.println("Error fetching transaction history: " + e.getMessage());

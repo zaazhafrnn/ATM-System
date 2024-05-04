@@ -11,14 +11,20 @@ package atmsystem;
 import java.time.LocalDateTime;
 
 public class Transaction {
+    private int transactionId;
     private String type;
     private double amount;
     private LocalDateTime timestamp;
 
-    public Transaction(String type, double amount, LocalDateTime timestamp) {
+    public Transaction(int transactionId, String type, double amount, LocalDateTime timestamp) {
+        this.transactionId = transactionId;
         this.type = type;
         this.amount = amount;
         this.timestamp = timestamp;
+    }
+    
+    public int getTransactionId() {
+        return transactionId;
     }
 
     public String getType() {
