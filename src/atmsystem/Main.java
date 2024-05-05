@@ -37,6 +37,7 @@ public class Main {
         System.out.print("Enter your PIN: ");
         int pin = scanner.nextInt();
         scanner.nextLine();
+        
         if (dbManager.authenticateUser(accountNumber, pin)) {
             return dbManager.getUserIdByAccountNumber(accountNumber);
         } else {

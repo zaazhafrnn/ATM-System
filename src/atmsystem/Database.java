@@ -135,6 +135,26 @@ public class Database {
         }
         return name;
     }
+    
+    public int getTransactionId() {
+        int lastTransactionId = 0;
+        try {
+            PreparedStatement pstmt = connection.prepareStatement("SELECT MAX(transaction_id) AS last_id FROM transactions");
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                lastTransactionId = rs.getInt("last_id");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching last transaction ID: " + e.getMessage());
+        }
+        return lastTransactionId;
+    }
+    
+    public int generateTransactionId() {
+        int lastTransactionId = getTransactionId();
+        int newTransactionId = lastTransactionId + 1;
+        return newTransactionId;
+    }
 
     public void closeConnection() {
     try {
@@ -154,15 +174,15 @@ public class Database {
             pstmt.setInt(1, userId);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
+                int transactionId = rs.getInt("transaction_id");
                 String type = rs.getString("type");
                 double amount = rs.getDouble("amount");
                 LocalDateTime timestamp = rs.getObject("timestamp", LocalDateTime.class);
-                int transactionId = 0;
                 transactions.add(new Transaction(transactionId, type, amount, timestamp));
             }
         } catch (SQLException e) {
             System.out.println("Error fetching transaction history: " + e.getMessage());
-            throw e; // Re-throw the exception
+            throw e;
         }
         return transactions;
     }

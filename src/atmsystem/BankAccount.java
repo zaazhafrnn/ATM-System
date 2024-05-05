@@ -11,14 +11,12 @@ public class BankAccount {
     private double balance;
     private List<Transaction> transactions;
     private Database dbManager;
-    private int transactionIdCounter;
 
     public BankAccount(Database dbManager, int userId) {
         this.dbManager = dbManager;
         this.userId = userId;
         balance = dbManager.getBalance(userId);
         transactions = new ArrayList<>();
-        transactionIdCounter = 1;
     }
 
     public void checkBalance() {
@@ -36,7 +34,7 @@ public class BankAccount {
             return;
         }
         
-        int transactionId = generateTransactionId();
+        int transactionId = dbManager.generateTransactionId();
 
         balance += amount;
         transactions.add(new Transaction(transactionId, "Deposit", amount, LocalDateTime.now()));
@@ -59,7 +57,7 @@ public class BankAccount {
             return;
         }
 
-        int transactionId = generateTransactionId();
+        int transactionId = dbManager.generateTransactionId();
             
         if (amount <= balance) {
             balance -= amount;
@@ -79,10 +77,16 @@ public class BankAccount {
         checkBalance();
         System.out.print("\nEnter the recipient's account number: ");
         String recipientAccountNumber = scanner.nextLine();
-        int transactionId = generateTransactionId();
-
+        
+        int transactionId = dbManager.generateTransactionId();
 
         int recipientUserId = dbManager.getUserIdByAccountNumber(recipientAccountNumber);
+        
+        if (recipientUserId == userId) {
+            System.out.println("\nYou cannot transfer funds to your own account.");
+            return;
+        }
+        
         if (recipientUserId != -1) {
             String recipientName;
             try {
@@ -116,11 +120,7 @@ public class BankAccount {
                     recipientBalance += amount;
                     dbManager.updateBalanceDatabase(recipientUserId, recipientBalance);
                     dbManager.addHistoryTransaction(transactionId, recipientUserId, "Transfer from " + dbManager.getUserName(userId), amount, LocalDateTime.now());
-
                     
-//                    dbManager.addHistoryTransaction(userId, "Transfer to " + recipientName, amount, LocalDateTime.now());
-//                    dbManager.addHistoryTransaction(recipientUserId, "Transfer from " + dbManager.getUserName(userId), amount, LocalDateTime.now());
-
                     System.out.println("Transfer successful. $" + amount + " transferred to account number: " + recipientAccountNumber);
                 } else {
                     System.out.println("Insufficient funds. Transfer cancelled.");
@@ -136,11 +136,14 @@ public class BankAccount {
     public void viewTransactionHistory() throws SQLException {
         List<Transaction> transactions = dbManager.getTransactionHistory(userId);
 
-        System.out.println("\nTransaction History:");
         if (transactions.isEmpty()) {
-            System.out.println("There is no transaction history yet.");
+            System.out.println("\nThere is no transaction history yet.");
         } else {
-            for (Transaction transaction : transactions) {
+            System.out.println("\n7 Last Transaction History:");
+            int startIndex = Math.max(0, transactions.size() - 7);
+            for (int i = startIndex; i < transactions.size(); i++) {
+                Transaction transaction = transactions.get(i);
+                System.out.println("Transaction ID: " + transaction.getTransactionId());
                 System.out.println("Type: " + transaction.getType());
                 System.out.println("Amount: $" + transaction.getAmount());
                 System.out.println("Timestamp: " + transaction.getTimestamp());
@@ -158,10 +161,4 @@ public class BankAccount {
             scanner.close();
         }
     }
-    
-    private int generateTransactionId() {
-        return transactionIdCounter++;
-    }
-
-
 }
