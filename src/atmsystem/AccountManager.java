@@ -6,13 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class BankAccount {
+public class AccountManager {
     private int userId;
     private double balance;
     private List<Transaction> transactions;
     private Database dbManager;
 
-    public BankAccount(Database dbManager, int userId) {
+    public AccountManager(Database dbManager, int userId) {
         this.dbManager = dbManager;
         this.userId = userId;
         balance = dbManager.getBalance(userId);

@@ -15,12 +15,12 @@ public class Main {
     public static void main(String[] args) throws SQLException {
         Database dbManager = new Database();
         Scanner scanner = new Scanner(System.in);
-        BankAccount account = null;
+        AccountManager account = null;
 
         int userId = authenticateUser(dbManager, scanner);
         if (userId != -1) {
             System.out.println("\nAuthentication successful.");
-            account = new BankAccount(dbManager, userId);
+            account = new AccountManager(dbManager, userId);
 
             Home home = new Home(scanner, account);
             home.handleUserInput();

@@ -13,9 +13,9 @@ import java.util.Scanner;
 
 public class Home {
     private Scanner scanner;
-    private BankAccount account;
+    private AccountManager account;
 
-    public Home(Scanner scanner, BankAccount account) {
+    public Home(Scanner scanner, AccountManager account) {
         this.scanner = scanner;
         this.account = account;
     }
