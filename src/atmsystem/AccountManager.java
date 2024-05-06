@@ -140,6 +140,7 @@ public class AccountManager {
             System.out.println("\nThere is no transaction history yet.");
         } else {
             System.out.println("\n7 Last Transaction History:");
+            System.out.println("");
             int startIndex = Math.max(0, transactions.size() - 7);
             for (int i = startIndex; i < transactions.size(); i++) {
                 Transaction transaction = transactions.get(i);

@@ -16,14 +16,33 @@ public class Main {
         Database dbManager = new Database();
         Scanner scanner = new Scanner(System.in);
         AccountManager account = null;
+        
+        System.out.print("\nEnter your account number: ");
+        String accountNumber = scanner.nextLine();
+        System.out.print("Enter your PIN: ");
+        int pin = scanner.nextInt();
+        scanner.nextLine();
 
-        int userId = authenticateUser(dbManager, scanner);
-        if (userId != -1) {
-            System.out.println("\nAuthentication successful.");
-            account = new AccountManager(dbManager, userId);
+        int userType = authenticateUser(dbManager, accountNumber, pin);
+        if (userType != -1) {
+//            int userId = dbManager.getUserIdByAccountNumber(accountNumber);
+            
+            int userId = userType;
 
-            Home home = new Home(scanner, account);
-            home.handleUserInput();
+            if (userType == 0) { 
+                System.out.println("\nAdmin authentication successful. Welcome!");
+                Admin admin = new Admin(scanner, dbManager);
+                admin.handleAdminInput();
+            } else if (userType == userId) {
+                System.out.println("\nAuthentication successful. Welcome!");
+                System.out.println("\nAuthenticate as " + dbManager.getUserName(userId));
+                
+//                int userId = dbManager.getUserIdByAccountNumber(userId); // Assuming you have a method to get userId from account number
+                
+                account = new AccountManager(dbManager, userId);
+                Home home = new Home(scanner, account);
+                home.handleUserInput();
+            }
         } else {
             System.out.println("Authentication failed. Exiting program.");
         }
@@ -31,17 +50,21 @@ public class Main {
         scanner.close();
     }
 
-    private static int authenticateUser(Database dbManager, Scanner scanner) {
-        System.out.print("\nEnter your account number: ");
-        String accountNumber = scanner.nextLine();
-        System.out.print("Enter your PIN: ");
-        int pin = scanner.nextInt();
-        scanner.nextLine();
-        
-        if (dbManager.authenticateUser(accountNumber, pin)) {
-            return dbManager.getUserIdByAccountNumber(accountNumber);
+    private static int authenticateUser(Database dbManager, String accountNumber, int pin) {
+
+        if (accountNumber.equals("0000") && pin == 0000) {
+            return 0;
         } else {
-            return -1;
+            int userId = dbManager.getUserIdByAccountNumber(accountNumber);
+            if (userId != -1 && dbManager.authenticateUser(accountNumber, pin)) {
+                // Regular user authentication successful
+                return userId;
+            } else {
+                // Authentication failed
+                System.out.println("Authentication failed. Invalid credentials.");
+                return -1;
+            }
         }
     }
+
 }
