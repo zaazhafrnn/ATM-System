@@ -37,7 +37,7 @@ public class Main {
                 System.out.println("\nAuthentication successful. Welcome!");
                 System.out.println("\nAuthenticate as " + dbManager.getUserName(userId));
                 
-//                int userId = dbManager.getUserIdByAccountNumber(userId); // Assuming you have a method to get userId from account number
+//                int userId = dbManager.getUserIdByAccountNumber(userId);
                 
                 account = new AccountManager(dbManager, userId);
                 Home home = new Home(scanner, account);
@@ -57,10 +57,8 @@ public class Main {
         } else {
             int userId = dbManager.getUserIdByAccountNumber(accountNumber);
             if (userId != -1 && dbManager.authenticateUser(accountNumber, pin)) {
-                // Regular user authentication successful
                 return userId;
             } else {
-                // Authentication failed
                 System.out.println("Authentication failed. Invalid credentials.");
                 return -1;
             }
