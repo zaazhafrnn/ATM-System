@@ -115,8 +115,9 @@ public class Database {
                 int id = rs.getInt("id");
                 String name = rs.getString("name");
                 String accountNumber = rs.getString("account_number");
+                int pin = rs.getInt("pin");
                 double balance = rs.getDouble("balance");
-                user = new User(id, name, accountNumber, balance);
+                user = new User(id, name, accountNumber, pin, balance);
             }
         } catch (SQLException e) {
             System.out.println("Error fetching user: " + e.getMessage());
@@ -221,7 +222,8 @@ public class Database {
                 String name = rs.getString("name");
                 String accountNumber = rs.getString("account_number");
                 int pin = rs.getInt("pin");
-                User user = new User(userId, name, accountNumber, pin);
+                double balance = rs.getDouble("balance");
+                User user = new User(userId, name, accountNumber, pin, balance);
                 users.add(user);
             }
         } catch (SQLException e) {
@@ -241,6 +243,21 @@ public class Database {
             return true;
         } catch (SQLException e) {
             System.out.println("Error adding new user: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    public boolean updateUser(User user) {
+        try {
+            PreparedStatement pstmt = connection.prepareStatement("UPDATE users SET name=?, account_number=?, pin=? WHERE id=?");
+            pstmt.setString(1, user.getName());
+            pstmt.setString(2, user.getAccountNumber());
+            pstmt.setInt(3, user.getPin());
+            pstmt.setInt(4, user.getId());
+            pstmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.out.println("Error updating user: " + e.getMessage());
             return false;
         }
     }

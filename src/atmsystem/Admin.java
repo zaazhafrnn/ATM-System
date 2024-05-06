@@ -25,8 +25,9 @@ public class Admin {
         System.out.println("\nAdmin Menu:");
         System.out.println("1. View All Users");
         System.out.println("2. Add New User");
-        System.out.println("3. Delete User");
-        System.out.println("4. Return to Main Menu");
+        System.out.println("3. Edit User");
+        System.out.println("4. Delete User");
+        System.out.println("5. Return to Main Menu");
         System.out.println("\nYour input: ");
     }
 
@@ -44,9 +45,12 @@ public class Admin {
                     addNewUser();
                     break;
                 case 3:
-                    deleteUser();
+                    editUser();
                     break;
                 case 4:
+                    deleteUser();
+                    break;
+                case 5:
                     return;
                 default:
                     System.out.println("Invalid choice. Please choose the right option");
@@ -63,6 +67,7 @@ public class Admin {
         System.out.println("User ID: " + user.getId());
         System.out.println("Name: " + user.getName());
         System.out.println("Account Number: " + user.getAccountNumber());
+        System.out.println("Pin: " + user.getPin());
 //        System.out.println("Balance: " + user.getBalance());
         System.out.println("-------------------------------------");
     }
@@ -86,6 +91,68 @@ public class Admin {
             System.out.println("Failed to add new user.");
         }
     }
+    
+    public void editUser() {
+        System.out.print("Enter the user ID you want to edit: ");
+        int userId = scanner.nextInt();
+        scanner.nextLine(); 
+
+        User userToEdit = dbManager.getUserById(userId);
+        if (userToEdit == null) {
+            System.out.println("User not found.");
+            return;
+        }
+
+        System.out.println("User Information:");
+        System.out.println("Name: " + userToEdit.getName());
+        System.out.println("Account Number: " + userToEdit.getAccountNumber());
+        System.out.println("PIN: " + userToEdit.getPin());
+
+        System.out.println("\nSelect what you want to edit:");
+        System.out.println("1. Change Name");
+        System.out.println("2. Change Account Number");
+        System.out.println("3. Change PIN");
+        System.out.println("4. Cancel Edit");
+
+        System.out.print("\nYour choice: ");
+        int choice = scanner.nextInt();
+        scanner.nextLine(); 
+
+        switch (choice) {
+            case 1:
+                System.out.println("Current user name: " + userToEdit.getName());
+                System.out.println("Enter new name: ");
+                String newName = scanner.nextLine();
+                userToEdit.setName(newName);
+                dbManager.updateUser(userToEdit);
+                System.out.println("Name updated successfully.");
+                break;
+            case 2:
+                System.out.println("Current " + userToEdit.getName() + "'s account number: " + userToEdit.getAccountNumber());
+                System.out.println("Enter new account number: ");
+                String newAccountNumber = scanner.nextLine();
+                userToEdit.setAccountNumber(newAccountNumber);
+                dbManager.updateUser(userToEdit);
+                System.out.println("Account number updated successfully.");
+                break;
+            case 3:
+                System.out.println("Current " + userToEdit.getName() + "'s pin: " + userToEdit.getPin());
+                System.out.println("Enter new PIN: ");
+                int newPin = scanner.nextInt();
+                scanner.nextLine(); 
+                userToEdit.setPin(newPin);
+                dbManager.updateUser(userToEdit);
+                System.out.println("PIN updated successfully.");
+                break;
+            case 4:
+                System.out.println("Edit canceled.");
+                break;
+            default:
+                System.out.println("Invalid choice.");
+                break;
+        }
+    }
+
 
     private void deleteUser() {
         System.out.print("Enter user ID to delete: ");

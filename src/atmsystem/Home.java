@@ -36,6 +36,7 @@ public class Home {
         while (true) {
             displayMenu();
             int choice = scanner.nextInt();
+            scanner.nextLine();
 
             switch (choice) {
                 case 1:
