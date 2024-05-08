@@ -1,1 +1,1 @@
-The Project is on Develop 🚧🏗️
+project is still in the development 🚧🏗️
