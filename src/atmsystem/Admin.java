@@ -23,12 +23,15 @@ public class Admin {
 
     public void displayAdminMenu() {
         System.out.println("\nAdmin Menu:");
-        System.out.println("1. View All Users");
-        System.out.println("2. Add New User");
+        System.out.println("1. Lihat Semua Users");
+        System.out.println("2. Tambah User Baru");
         System.out.println("3. Edit User");
-        System.out.println("4. Delete User");
-        System.out.println("5. Return to Main Menu");
-        System.out.println("\nYour input: ");
+        System.out.println("4. Hapus User");
+        System.out.println("5. Lihat Semua Rekening");
+        System.out.println("6. Edit Rekening");
+        System.out.println("7. Hapus Rekening");
+        System.out.println("8. Kembali ke halaman utaman");
+        System.out.println("\nInput: ");
     }
 
     public void handleAdminInput() throws SQLException {
@@ -65,10 +68,10 @@ public class Admin {
     List<User> users = dbManager.getAllUsers();
     for (User user : users) {
         System.out.println("User ID: " + user.getId());
-        System.out.println("Name: " + user.getName());
-        System.out.println("Account Number: " + user.getAccountNumber());
-        System.out.println("Pin: " + user.getPin());
-//        System.out.println("Balance: " + user.getBalance());
+        System.out.println("Nama Depan: " + user.getFirstName());
+        System.out.println("Nama Belakang: " + user.getLastName());
+        System.out.println("Alamat: " + user.getAddress());
+        System.out.println("No. Telp: " + user.getPhone());
         System.out.println("-------------------------------------");
     }
 }
@@ -97,16 +100,16 @@ public class Admin {
         int userId = scanner.nextInt();
         scanner.nextLine(); 
 
-        User userToEdit = dbManager.getUserById(userId);
-        if (userToEdit == null) {
+//        User userToEdit = dbManager.getUserById(userId);
+//        if (userToEdit == null) {
             System.out.println("User not found.");
             return;
         }
 
         System.out.println("User Information:");
-        System.out.println("Name: " + userToEdit.getName());
-        System.out.println("Account Number: " + userToEdit.getAccountNumber());
-        System.out.println("PIN: " + userToEdit.getPin());
+//        System.out.println("Name: " + userToEdit.getName());
+//        System.out.println("Account Number: " + userToEdit.getAccountNumber());
+//        System.out.println("PIN: " + userToEdit.getPin());
 
         System.out.println("\nSelect what you want to edit:");
         System.out.println("1. Change Name");
@@ -119,38 +122,38 @@ public class Admin {
         scanner.nextLine(); 
 
         switch (choice) {
-            case 1:
-                System.out.println("Current user name: " + userToEdit.getName());
-                System.out.println("Enter new name: ");
-                String newName = scanner.nextLine();
-                userToEdit.setName(newName);
-                dbManager.updateUser(userToEdit);
-                System.out.println("Name updated successfully.");
-                break;
-            case 2:
-                System.out.println("Current " + userToEdit.getName() + "'s account number: " + userToEdit.getAccountNumber());
-                System.out.println("Enter new account number: ");
-                String newAccountNumber = scanner.nextLine();
-                userToEdit.setAccountNumber(newAccountNumber);
-                dbManager.updateUser(userToEdit);
-                System.out.println("Account number updated successfully.");
-                break;
-            case 3:
-                System.out.println("Current " + userToEdit.getName() + "'s pin: " + userToEdit.getPin());
-                System.out.println("Enter new PIN: ");
-                int newPin = scanner.nextInt();
-                scanner.nextLine(); 
-                userToEdit.setPin(newPin);
-                dbManager.updateUser(userToEdit);
-                System.out.println("PIN updated successfully.");
-                break;
-            case 4:
-                System.out.println("Edit canceled.");
-                break;
-            default:
-                System.out.println("Invalid choice.");
-                break;
-        }
+//            case 1:
+//                System.out.println("Current user name: " + userToEdit.getName());
+//                System.out.println("Enter new name: ");
+//                String newName = scanner.nextLine();
+//                userToEdit.setName(newName);
+//                dbManager.updateUser(userToEdit);
+//                System.out.println("Name updated successfully.");
+//                break;
+//            case 2:
+//                System.out.println("Current " + userToEdit.getName() + "'s account number: " + userToEdit.getAccountNumber());
+//                System.out.println("Enter new account number: ");
+//                String newAccountNumber = scanner.nextLine();
+//                userToEdit.setAccountNumber(newAccountNumber);
+//                dbManager.updateUser(userToEdit);
+//                System.out.println("Account number updated successfully.");
+//                break;
+//            case 3:
+//                System.out.println("Current " + userToEdit.getName() + "'s pin: " + userToEdit.getPin());
+//                System.out.println("Enter new PIN: ");
+//                int newPin = scanner.nextInt();
+//                scanner.nextLine(); 
+//                userToEdit.setPin(newPin);
+//                dbManager.updateUser(userToEdit);
+//                System.out.println("PIN updated successfully.");
+//                break;
+//            case 4:
+//                System.out.println("Edit canceled.");
+//                break;
+//            default:
+//                System.out.println("Invalid choice.");
+//                break;
+//        }
     }
 
 
@@ -159,9 +162,9 @@ public class Admin {
         int userIdToDelete = scanner.nextInt();
         scanner.nextLine();
 
-        User userToDelete = dbManager.getUserById(userIdToDelete);
+//        User userToDelete = dbManager.getUserById(userIdToDelete);
         if (userToDelete != null) {
-            System.out.println("Are you sure you want to delete user " + userToDelete.getName() + " (ID: " + userToDelete.getId() + ")? (Y/N)");
+//            System.out.println("Are you sure you want to delete user " + userToDelete.getName() + " (ID: " + userToDelete.getId() + ")? (Y/N)");
             String confirmation = scanner.nextLine();
             if (confirmation.equalsIgnoreCase("Y")) {
                 boolean success = dbManager.deleteUser(userIdToDelete);

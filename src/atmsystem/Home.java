@@ -22,14 +22,14 @@ public class Home {
 
 
     public void displayMenu() {
-        System.out.println("\nChoose an option:");
-        System.out.println("1. Check Balance");
-        System.out.println("2. Deposit Money");
-        System.out.println("3. Withdraw Money");
-        System.out.println("4. View Transaction History");
-        System.out.println("5. Transfer");
-        System.out.println("6. Exit");
-        System.out.println("\nYour input: ");
+        System.out.println("\nPilih opsi dibawah:");
+        System.out.println("\n1. Cek saldo");
+        System.out.println("2. Setor Tunai");
+        System.out.println("3. Tarik Tunai");
+        System.out.println("4. Transfer");
+        System.out.println("5. Cek Mutasi Rekening");
+        System.out.println("6. Keluar");
+        System.out.print("\nInput : ");
     }
 
     public void handleUserInput() throws SQLException {
@@ -49,13 +49,13 @@ public class Home {
                     account.withdraw(scanner);
                     break;
                 case 4:
-                    account.viewTransactionHistory();
-                    break;
-                case 5:
                     account.transfer(scanner);
                     break;
+                case 5:
+                    account.viewTransactionHistory();
+                    break;
                 case 6:
-                    System.out.println("Exiting program. Thank you!");
+                    System.out.println("Terimakasih telah berkunjung! Sampai Ketemu lagi.");
                     account.getDatabase().closeConnection();
                     account.closeScanner(scanner);
                     System.exit(0);

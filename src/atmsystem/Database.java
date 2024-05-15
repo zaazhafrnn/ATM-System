@@ -39,97 +39,76 @@ public class Database {
         return connection;
     }
 
-    public double getBalance(int userId) {
-        double balance = 0.0;
+    public double getBalance(int accountId) {
+        double saldo = 0.0;
         try {
-            PreparedStatement pstmt = connection.prepareStatement("SELECT balance FROM users WHERE id = ?");
-            pstmt.setInt(1, userId);
+            PreparedStatement pstmt = connection.prepareStatement("SELECT saldo FROM rekening WHERE id = ?");
+            pstmt.setInt(1, accountId);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
-                balance = rs.getDouble("balance");
+                saldo = rs.getDouble("saldo");
             } else {
-                System.out.println("User not found in database");
+                System.out.println("Balance not found in database");
             }
         } catch (SQLException e) {
             System.out.println("Error fetching balance: " + e.getMessage());
         }
-        return balance;
+        return saldo;
     }
 
-    public void updateBalanceDatabase(int userId, double newBalance) {
+    public void updateBalanceDatabase(int accountId, double newBalance) {
         try {
-            PreparedStatement pstmt = connection.prepareStatement("UPDATE users SET balance = ? WHERE id = ?");
+            PreparedStatement pstmt = connection.prepareStatement("UPDATE rekening SET saldo = ? WHERE id = ?");
             pstmt.setDouble(1, newBalance);
-            pstmt.setInt(2, userId);
+            pstmt.setInt(2, accountId);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Error updating balance: " + e.getMessage());
         }
     }
 
-    public void addHistoryTransaction(int transactionId, int userId, String type, double amount, LocalDateTime timestamp) {
+    public void addTransaction(Transaksi transaction) {
         try {
-            PreparedStatement pstmt = connection.prepareStatement("INSERT INTO transactions (transaction_id, user_id, type, amount, timestamp) VALUES (?, ?, ?, ?, ?)");
-            pstmt.setInt(1, transactionId);
-            pstmt.setInt(2, userId);
-            pstmt.setString(3, type);
-            pstmt.setDouble(4, amount);
-            pstmt.setObject(5, timestamp);
+            PreparedStatement pstmt = connection.prepareStatement("INSERT INTO transaksi (transaksi_id, no_rekening, tipe_transaksi, jumlah, deskripsi, tanggal) VALUES (?, ?, ?, ?, ?, ?)");
+            pstmt.setInt(1, transaction.getAccountId());
+            pstmt.setInt(2, transaction.getTransactionId());
+            pstmt.setString(3, transaction.getTransactionType());
+            pstmt.setDouble(4, transaction.getAmount());
+            pstmt.setString(5, transaction.getDescription());
+            pstmt.setObject(6, transaction.getTimestamp());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Error adding transaction to database: " + e.getMessage());
         }
     }
 
-
-    public boolean authenticateUser(String accountNumber, int pin) {
+    public int authenticateRekening(String accountNumber, int pin) {
         try {
             if (accountNumber.equals("0000") && pin == 0000) {
-                return true;
+                return 0;
             } else {
-                String query = "SELECT pin FROM users WHERE account_number = ?";
+                String query = "SELECT id FROM rekening WHERE no_rekening = ? AND pin = ?";
                 try (PreparedStatement pstmt = connection.prepareStatement(query)) {
                     pstmt.setString(1, accountNumber);
+                    pstmt.setInt(2, pin);
                     ResultSet rs = pstmt.executeQuery();
                     if (rs.next()) {
-                        int storedPin = rs.getInt("pin");
-                        return storedPin == pin;
+                        return rs.getInt("id");
                     } else {
-                        return false;
+                        return -1;
                     }
                 }
             }
         } catch (SQLException e) {
-            System.out.println("Error authenticating user: " + e.getMessage());
-            return false;
+            System.out.println("Error authenticating account: " + e.getMessage());
+            return -1;
         }
     }
-    
-    public User getUserById(int userId) {
-        User user = null;
-        try {
-            PreparedStatement pstmt = connection.prepareStatement("SELECT * FROM users WHERE id = ?");
-            pstmt.setInt(1, userId);
-            ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {
-                int id = rs.getInt("id");
-                String name = rs.getString("name");
-                String accountNumber = rs.getString("account_number");
-                int pin = rs.getInt("pin");
-                double balance = rs.getDouble("balance");
-                user = new User(id, name, accountNumber, pin, balance);
-            }
-        } catch (SQLException e) {
-            System.out.println("Error fetching user: " + e.getMessage());
-        }
-        return user;
-    }
-
 
     public int getUserIdByAccountNumber(String accountNumber) {
         int userId = -1;
         try {
-            String query = "SELECT id FROM users WHERE account_number = ?";
+            String query = "SELECT id FROM rekening WHERE no_rekening = ?";
             try (PreparedStatement pstmt = connection.prepareStatement(query)) {
                 pstmt.setString(1, accountNumber);
                 ResultSet rs = pstmt.executeQuery();
@@ -146,11 +125,13 @@ public class Database {
     public String getUserName(int userId) throws SQLException {
         String name = "";
         try {
-            PreparedStatement pstmt = connection.prepareStatement("SELECT name FROM users WHERE id = ?");
+            PreparedStatement pstmt = connection.prepareStatement("SELECT nama_depan, nama_belakang FROM users WHERE id = (SELECT user_id FROM rekening WHERE id = ?)");
             pstmt.setInt(1, userId);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
-                name = rs.getString("name");
+                String firstName = rs.getString("nama_depan");
+                String lastName = rs.getString("nama_belakang");
+                name = firstName + " " + lastName;
             } else {
                 System.out.println("User not found in the database.");
             }
@@ -164,7 +145,7 @@ public class Database {
     public int getTransactionId() {
         int lastTransactionId = 0;
         try {
-            PreparedStatement pstmt = connection.prepareStatement("SELECT MAX(transaction_id) AS last_id FROM transactions");
+            PreparedStatement pstmt = connection.prepareStatement("SELECT MAX(transaksi_id) AS last_id FROM transaksi");
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
                 lastTransactionId = rs.getInt("last_id");
@@ -181,29 +162,21 @@ public class Database {
         return newTransactionId;
     }
 
-    public void closeConnection() {
-    try {
-        if (connection != null) {
-            connection.close();
-        }
-    } catch (SQLException e) {
-        System.out.println("Error closing database connection: " + e.getMessage());
-    }
-}
-
-
-    public List<Transaction> getTransactionHistory(int userId) throws SQLException {
-        List<Transaction> transactions = new ArrayList<>();
+    public List<Transaksi> getTransactionHistory(int accountId) throws SQLException {
+        List<Transaksi> transactions = new ArrayList<>();
         try {
-            PreparedStatement pstmt = connection.prepareStatement("SELECT * FROM transactions WHERE user_id = ?");
-            pstmt.setInt(1, userId);
+            PreparedStatement pstmt = connection.prepareStatement("SELECT * FROM transaksi WHERE no_rekening = ?");
+            pstmt.setInt(1, accountId);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
-                int transactionId = rs.getInt("transaction_id");
-                String type = rs.getString("type");
-                double amount = rs.getDouble("amount");
-                LocalDateTime timestamp = rs.getObject("timestamp", LocalDateTime.class);
-                transactions.add(new Transaction(transactionId, type, amount, timestamp));
+                int transactionId = rs.getInt("transaksi_id");
+                String transactionType = rs.getString("tipe_transaksi");
+                double amount = rs.getDouble("jumlah");
+                String description = rs.getString("deskripsi");
+                LocalDateTime timestamp = rs.getObject("tanggal", LocalDateTime.class);
+//                transactions.add(new Transaction(transactionId, type, amount, timestamp));
+                Transaksi transaction = new Transaksi(accountId, transactionId, transactionType, amount, description, timestamp);
+                transactions.add(transaction);
             }
         } catch (SQLException e) {
             System.out.println("Error fetching transaction history: " + e.getMessage());
@@ -212,6 +185,9 @@ public class Database {
         return transactions;
     }
     
+    
+//    ADMIN FUNCTION
+    
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
         try {
@@ -219,11 +195,12 @@ public class Database {
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 int userId = rs.getInt("id");
-                String name = rs.getString("name");
-                String accountNumber = rs.getString("account_number");
-                int pin = rs.getInt("pin");
-                double balance = rs.getDouble("balance");
-                User user = new User(userId, name, accountNumber, pin, balance);
+                int nik = rs.getInt("nik");
+                String firstName = rs.getString("nama_depan");
+                String lastName = rs.getString("nama_belakang");
+                String address = rs.getString("alamat");
+                int phone = rs.getInt("no_telp");
+                User user = new User(userId, nik, firstName, lastName, address, phone);
                 users.add(user);
             }
         } catch (SQLException e) {
@@ -247,20 +224,20 @@ public class Database {
         }
     }
     
-    public boolean updateUser(User user) {
-        try {
-            PreparedStatement pstmt = connection.prepareStatement("UPDATE users SET name=?, account_number=?, pin=? WHERE id=?");
-            pstmt.setString(1, user.getName());
-            pstmt.setString(2, user.getAccountNumber());
-            pstmt.setInt(3, user.getPin());
-            pstmt.setInt(4, user.getId());
-            pstmt.executeUpdate();
-            return true;
-        } catch (SQLException e) {
-            System.out.println("Error updating user: " + e.getMessage());
-            return false;
-        }
-    }
+//    public boolean updateUser(User user) {
+//        try {
+//            PreparedStatement pstmt = connection.prepareStatement("UPDATE users SET name=?, account_number=?, pin=? WHERE id=?");
+//            pstmt.setString(1, user.getName());
+//            pstmt.setString(2, user.getAccountNumber());
+//            pstmt.setInt(3, user.getPin());
+//            pstmt.setInt(4, user.getId());
+//            pstmt.executeUpdate();
+//            return true;
+//        } catch (SQLException e) {
+//            System.out.println("Error updating user: " + e.getMessage());
+//            return false;
+//        }
+//    }
 
     public boolean deleteUser(int userId) {
         try {
@@ -275,4 +252,15 @@ public class Database {
     }
 
     
+//        CLOSE CONNECTION
+    
+    public void closeConnection() {
+        try {
+            if (connection != null) {
+                connection.close();
+            }
+        } catch (SQLException e) {
+            System.out.println("Error closing database connection: " + e.getMessage());
+        }
+    }
 }

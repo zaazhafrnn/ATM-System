@@ -10,57 +10,54 @@ package atmsystem;
  */
 public class User {
     private int id;
-    private String name;
-    private String accountNumber;
-    private int pin;
-    private double balance;
+    private int nik;
+    private String firstName;
+    private String lastName;
+    private String address;
+    private int phone;
 
-    public User(int id, String name, String accountNumber, int pin, double balance) {
+    public User(int id, int nik, String firstName, String lastName, String address, int phone) {
         this.id = id;
-        this.name = name;
-        this.accountNumber = accountNumber;
-        this.pin = pin;
-        this.balance = balance;
+        this.nik = nik;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.address = address;
+        this.phone = phone;
     }
     
      public int getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getAccountNumber() {
-        return accountNumber;
+    public String getFirstName() {
+        return firstName;
     }
     
-    public int getPin() {
-        return pin;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public double getBalance() {
-        return balance;
+    public String getLastName() {
+        return lastName;
     }
     
-    public void setName(String name) {
-        this.name = name;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
-    public void setAccountNumber(String accountNumber) {
-        this.accountNumber = accountNumber;
+    public String getAddress() {
+        return address;
+    }
+    
+    public void setAddress(String address) {
+        this.address = address;
     }
 
-    public void setPin(int pin) {
-        this.pin = pin;
+    public int getPhone() {
+        return phone;
     }
-
-//    public void displayUserInfo() {
-//        System.out.println("\nUser Information:");
-//        System.out.println("ID: " + id);
-//        System.out.println("Name: " + name);
-//        System.out.println("Account Number: " + accountNumber);
-//        System.out.println("Balance: $" + balance);
-//        System.out.println("-------------------------------------");
-//    }
+    
+    public void setPhone(int phone) {
+        this.phone = phone;
+    }
 }
