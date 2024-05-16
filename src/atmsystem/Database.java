@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.*;
 
 public class Database {
     private Connection connection;
@@ -84,19 +85,15 @@ public class Database {
 
     public int authenticateRekening(String accountNumber, int pin) {
         try {
-            if (accountNumber.equals("0000") && pin == 0000) {
-                return 0;
-            } else {
-                String query = "SELECT id FROM rekening WHERE no_rekening = ? AND pin = ?";
-                try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-                    pstmt.setString(1, accountNumber);
-                    pstmt.setInt(2, pin);
-                    ResultSet rs = pstmt.executeQuery();
-                    if (rs.next()) {
-                        return rs.getInt("id");
-                    } else {
-                        return -1;
-                    }
+            String query = "SELECT id FROM rekening WHERE no_rekening = ? AND pin = ?";
+            try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+                pstmt.setString(1, accountNumber);
+                pstmt.setInt(2, pin);
+                ResultSet rs = pstmt.executeQuery();
+                if (rs.next()) {
+                    return rs.getInt("id");
+                } else {
+                    return -1;
                 }
             }
         } catch (SQLException e) {
@@ -190,59 +187,109 @@ public class Database {
     
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
-        try {
-            PreparedStatement pstmt = connection.prepareStatement("SELECT * FROM users");
-            ResultSet rs = pstmt.executeQuery();
+        String query = "SELECT * FROM users"; 
+
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
             while (rs.next()) {
-                int userId = rs.getInt("id");
+                int id = rs.getInt("id");
                 int nik = rs.getInt("nik");
                 String firstName = rs.getString("nama_depan");
                 String lastName = rs.getString("nama_belakang");
                 String address = rs.getString("alamat");
-                int phone = rs.getInt("no_telp");
-                User user = new User(userId, nik, firstName, lastName, address, phone);
+                String phone = rs.getString("no_telp");
+
+                User user = new User(id, nik, firstName, lastName, address, phone);
                 users.add(user);
             }
         } catch (SQLException e) {
-            System.out.println("Error fetching all users: " + e.getMessage());
+            System.out.println("Error retrieving users: " + e.getMessage());
         }
         return users;
     }
 
-    boolean addNewUser(String name, String accountNumber, int pin, double balance) {
-        try {
-            PreparedStatement pstmt = connection.prepareStatement("INSERT INTO users (name, account_number, pin, balance) VALUES (?, ?, ?, ?)");
-            pstmt.setString(1, name);
-            pstmt.setString(2, accountNumber);
-            pstmt.setInt(3, pin);
-            pstmt.setDouble(4, balance);
-            pstmt.executeUpdate();
-            return true;
+    public boolean addNewUser(int nik, String firstName, String lastName, String address, String phone) {
+        if (isNikExists(nik)) {
+            System.out.println("\nNIK sudah ada. Gagal menambahkan user.");
+            return false;
+        }
+
+        String query = "INSERT INTO users (nik, nama_depan, nama_belakang, alamat, no_telp) VALUES (?, ?, ?, ?, ?)";
+        
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setInt(1, nik);
+            pstmt.setString(2, firstName);
+            pstmt.setString(3, lastName);
+            pstmt.setString(4, address);
+            pstmt.setString(5, phone);
+            
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected > 0;
         } catch (SQLException e) {
             System.out.println("Error adding new user: " + e.getMessage());
             return false;
         }
     }
     
-//    public boolean updateUser(User user) {
-//        try {
-//            PreparedStatement pstmt = connection.prepareStatement("UPDATE users SET name=?, account_number=?, pin=? WHERE id=?");
-//            pstmt.setString(1, user.getName());
-//            pstmt.setString(2, user.getAccountNumber());
-//            pstmt.setInt(3, user.getPin());
-//            pstmt.setInt(4, user.getId());
-//            pstmt.executeUpdate();
-//            return true;
-//        } catch (SQLException e) {
-//            System.out.println("Error updating user: " + e.getMessage());
-//            return false;
-//        }
-//    }
+    private boolean isNikExists(int nik) {
+        String query = "SELECT COUNT(*) FROM users WHERE nik = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setInt(1, nik);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error checking NIK: " + e.getMessage());
+        }
+        return false;
+    }
+    
+    public User getUserByNik(int nik) {
+        String query = "SELECT * FROM users WHERE nik = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setInt(1, nik);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    int id = rs.getInt("id");
+                    String firstName = rs.getString("nama_depan");
+                    String lastName = rs.getString("nama_belakang");
+                    String address = rs.getString("alamat");
+                    String phone = rs.getString("no_telp");
 
-    public boolean deleteUser(int userId) {
+                    return new User(id, nik, firstName, lastName, address, phone);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching user: " + e.getMessage());
+        }
+        return null;
+    }
+
+    
+    public boolean updateUser(User user) {
+        String query = "UPDATE users SET nama_depan = ?, nama_belakang = ?, alamat = ?, no_telp = ? WHERE nik = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, user.getFirstName());
+            pstmt.setString(2, user.getLastName());
+            pstmt.setString(3, user.getAddress());
+            pstmt.setString(4, user.getPhone());
+            pstmt.setInt(5, user.getNik());
+
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            System.out.println("Error updating user: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean deleteUserByNik(int nik) {
         try {
-            PreparedStatement pstmt = connection.prepareStatement("DELETE FROM users WHERE id = ?");
-            pstmt.setInt(1, userId);
+            PreparedStatement pstmt = connection.prepareStatement("DELETE FROM users WHERE nik = ?");
+            pstmt.setInt(1, nik);
             int rowsAffected = pstmt.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
@@ -250,7 +297,85 @@ public class Database {
             return false;
         }
     }
+    
+    public List<Rekening> getAllRekenings() {
+        List<Rekening> rekenings = new ArrayList<>();
+        String query = "SELECT r.id, r.user_id, r.no_rekening, r.pin, r.saldo, u.nama_depan, u.nama_belakang " +
+                       "FROM rekening r JOIN users u ON r.user_id = u.id";
 
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                int userId = rs.getInt("user_id");
+                String accountNumber = rs.getString("no_rekening");
+                int pin = rs.getInt("pin");
+                double balance = rs.getDouble("saldo");
+                String firstName = rs.getString("nama_depan");
+                String lastName = rs.getString("nama_belakang");
+
+                Rekening rekening = new Rekening(id, userId, accountNumber, pin, balance, firstName, lastName);
+                rekenings.add(rekening);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error retrieving rekenings: " + e.getMessage());
+        }
+        return rekenings;
+    }
+    
+    public Rekening getRekeningByAccountNumber(String accountNumber) {
+        String query = "SELECT r.id, r.user_id, r.no_rekening, r.pin, r.saldo, u.nama_depan, u.nama_belakang " +
+                       "FROM rekening r JOIN users u ON r.user_id = u.id WHERE r.no_rekening = ?";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, accountNumber);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                int id = rs.getInt("id");
+                int userId = rs.getInt("user_id");
+                String accNumber = rs.getString("no_rekening");
+                int pin = rs.getInt("pin");
+                double balance = rs.getDouble("saldo");
+                String firstName = rs.getString("nama_depan");
+                String lastName = rs.getString("nama_belakang");
+
+                return new Rekening(id, userId, accNumber, pin, balance, firstName, lastName);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error retrieving rekening: " + e.getMessage());
+        }
+        return null;
+    }
+
+    public boolean updateRekeningPin(int rekeningId, int newPin) {
+        String query = "UPDATE rekening SET pin = ? WHERE id = ?";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setInt(1, newPin);
+            pstmt.setInt(2, rekeningId);
+
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            System.out.println("Error updating rekening pin: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    public boolean deleteRekeningByAccountNumber(String accountNumber) {
+        String query = "DELETE FROM rekening WHERE no_rekening = ?";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, accountNumber);
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            System.out.println("Error deleting rekening: " + e.getMessage());
+            return false;
+        }
+    }
     
 //        CLOSE CONNECTION
     

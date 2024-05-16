@@ -14,9 +14,9 @@ public class User {
     private String firstName;
     private String lastName;
     private String address;
-    private int phone;
+    private String phone;
 
-    public User(int id, int nik, String firstName, String lastName, String address, int phone) {
+    public User(int id, int nik, String firstName, String lastName, String address, String phone) {
         this.id = id;
         this.nik = nik;
         this.firstName = firstName;
@@ -28,7 +28,15 @@ public class User {
      public int getId() {
         return id;
     }
+     
+    public int getNik() {
+        return nik;
+    }
 
+    public void setNik(int nik) {
+        this.nik = nik;
+    }
+    
     public String getFirstName() {
         return firstName;
     }
@@ -53,11 +61,11 @@ public class User {
         this.address = address;
     }
 
-    public int getPhone() {
+    public String getPhone() {
         return phone;
     }
     
-    public void setPhone(int phone) {
+    public void setPhone(String phone) {
         this.phone = phone;
     }
 }
