@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import javax.swing.JOptionPane;
 
 public class AccountManager {
     private int userId;
@@ -14,11 +15,12 @@ public class AccountManager {
     private List<Transaksi> transactions;
     private Database dbManager;
 
-    public AccountManager(Database dbManager, int accountId) {
+    public AccountManager(Database dbManager, int accountId, double saldo) {
         this.dbManager = dbManager;
-//        this.userId = userId;
+        this.userId = userId;
         this.accountId = accountId;
-        saldo = dbManager.getBalance(accountId);
+        this.saldo = saldo;
+//        saldo = dbManager.getBalance(accountId);
         transactions = new ArrayList<>();
     }
 
@@ -26,14 +28,9 @@ public class AccountManager {
         System.out.println("\nSaldo anda : Rp. " + saldo);
     }
 
-    public void deposit(Scanner scanner) {
-        checkBalance();
-        System.out.print("\nJumlah uang yang akan di setor? Rp. ");
-        double amount = scanner.nextDouble();
-
+    public void deposit(double amount) {
         if (amount <= 0) {
-            System.out.println("Invalid amount. Nilai tidak bisa kosong atau negatif.");
-            System.out.println("Transaksi batal.");
+            JOptionPane.showMessageDialog(null, "Invalid amount. Nilai tidak bisa kosong atau negatif.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
@@ -45,38 +42,35 @@ public class AccountManager {
         Transaksi depositTransaction = new Transaksi(transactionId, accountId, "Setor", amount, "Setor Tunai", LocalDateTime.now());
         dbManager.addTransaction(depositTransaction);
         
-        System.out.println("Setor berhasil. Saldo di rekening anda sebesar: Rp. " + saldo);
+        JOptionPane.showMessageDialog(null, "Transaksi berhasil. Saldo anda saat ini: Rp. " + saldo, "Success", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    public void withdraw(Scanner scanner) {
-        checkBalance();
-        System.out.print("\nMasukkan jumlah yang akan di ambil: Rp. ");
-        double amount = scanner.nextDouble();
-
+    public void withdraw(double amount) {
         if (amount <= 0) {
-            System.out.println("Invalid amount. Nilai tidak bisa kosong atau negatif.");
-            System.out.println("Transaksi batal.");
+            JOptionPane.showMessageDialog(null, "Invalid amount. Nilai tidak bisa kosong atau negatif.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         int transactionId = dbManager.generateTransactionId();
-            
-        if (amount <= saldo) {
+
+        if (amount <= saldo){
             saldo -= amount;
             dbManager.updateBalanceDatabase(accountId, saldo);
-            
+
             Transaksi withdrawalTransaction = new Transaksi(transactionId, accountId, "Tarik", amount, "Tarik Tunai", LocalDateTime.now());
             dbManager.addTransaction(withdrawalTransaction);
-            
-            System.out.println("Transaksi berhasil. Saldo anda tersisa: Rp. " + saldo);
+
+            JOptionPane.showMessageDialog(null, "Berhasil Tarik Tunai. Saldo anda tersisa: Rp. " + saldo, "Berhasil", JOptionPane.INFORMATION_MESSAGE);
         } else {
-            System.out.println("Dana tidak mencukupi. Silahkan coba lagi.");
+            JOptionPane.showMessageDialog(null, "Dana tidak mencukupi. Silahkan coba lagi.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+
     }
 
+
     public void transfer(Scanner scanner) throws SQLException {
-        checkBalance();
-        System.out.print("\nCari No. Rekening yang dituju: ");
+//        System.out.print("\nCari No. Rekening yang dituju: ");
         String recipientAccountNumber = scanner.nextLine();
         
         int transactionId = dbManager.generateTransactionId();

@@ -181,8 +181,8 @@ public class Database {
         }
         return transactions;
     }
-    
-    
+
+        
 //    ADMIN FUNCTION
     
     public List<User> getAllUsers() {
