@@ -7,9 +7,6 @@ package atmsystem;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Login extends javax.swing.JFrame {
     private Database dbManager;

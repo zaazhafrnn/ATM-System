@@ -24,13 +24,17 @@ public class AccountManager {
         transactions = new ArrayList<>();
     }
 
-    public void checkBalance() {
-        System.out.println("\nSaldo anda : Rp. " + saldo);
+    public double getBalance() {
+        return this.saldo;
     }
+    
+//    public void checkBalance() {
+//        System.out.println("\nSaldo anda : Rp. " + saldo);
+//    }
 
     public void deposit(double amount) {
         if (amount <= 0) {
-            JOptionPane.showMessageDialog(null, "Invalid amount. Nilai tidak bisa kosong atau negatif.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Invalid amount. Nominal tidak bisa kosong atau negatif.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
@@ -47,7 +51,7 @@ public class AccountManager {
 
     public void withdraw(double amount) {
         if (amount <= 0) {
-            JOptionPane.showMessageDialog(null, "Invalid amount. Nilai tidak bisa kosong atau negatif.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Invalid amount. Nominal tidak bisa kosong atau negatif.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 

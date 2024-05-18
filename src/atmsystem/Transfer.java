@@ -71,9 +71,10 @@ public class Transfer extends javax.swing.JFrame {
             return;
         }
 
-        accountManager.transfer(recipientAccountNumber, amount);
+//        accountManager.transfer(recipientAccountNumber, amount);
         this.setVisible(false);
-        new Menu(accountNumber, accountId).setVisible(true);
+        new MasukanPIN(accountNumber, accountId, amount, "transfer", recipientAccountNumber).setVisible(true);
+
     }
 
     private void navigateBackToTransfer() {

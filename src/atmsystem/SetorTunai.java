@@ -18,12 +18,14 @@ public class SetorTunai extends javax.swing.JFrame {
     private Database dbManager;
     private String accountNumber;
     private int accountId;
+    private String recipientAccountNumber;
     private AccountManager accountManager;
 
     /** Creates new form SetorTunai */
-    public SetorTunai(String accountNumber, int accountId) {
+    public SetorTunai(String accountNumber, int accountId, String recipientAccountNumber) {
         this.accountNumber = accountNumber;
         this.accountId = accountId;
+        this.recipientAccountNumber = recipientAccountNumber;
         dbManager = new Database();
         
         // Retrieve the account details
@@ -56,11 +58,20 @@ public class SetorTunai extends javax.swing.JFrame {
     private void handleDeposit() {
         double amount;
         amount = Double.parseDouble(jTextField10.getText());
-        accountManager.deposit(amount);
+//        accountManager.deposit(amount);
 //        int accountId = rekening.getId();
         
-        this.setVisible(false); 
-        new Menu(accountNumber, accountId).setVisible(true); 
+        try {
+            amount = Double.parseDouble(jTextField10.getText());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Invalid amount entered.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        this.setVisible(false);
+        new MasukanPIN(accountNumber, accountId, amount, recipientAccountNumber, "transfer").setVisible(true);
+
+//        new MasukanPIN(accountNumber, accountId, amount, "deposit").setVisible(true);
     }
     
     private void navigateBackToMenu() {
