@@ -21,7 +21,7 @@ public class Login extends javax.swing.JFrame {
         jButton29.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Button Enter pressed!");
+//                System.out.println("Button Enter pressed!");
                 handleLogin();
             }
         });
@@ -41,8 +41,12 @@ public class Login extends javax.swing.JFrame {
 
         // Authenticate with the database
         Rekening rekening = dbManager.getRekeningByAccountNumber(accountNumber);
-        if (rekening != null && rekening.getPin() == pin) {
-            JOptionPane.showMessageDialog(this, "Welcome " + rekening.getFirstName() + " " + rekening.getLastName(), "Login Successful", JOptionPane.INFORMATION_MESSAGE);
+        if (rekening != null && rekening.getPin() == pin) 
+        {
+            JOptionPane.showMessageDialog(this, "Selamat Datang " + rekening.getFirstName() + "!", "Login Berhasil", JOptionPane.INFORMATION_MESSAGE);
+            System.out.println("Login Sebagai");
+            System.out.println("No Rek: " + rekening.getAccountNumber());
+            System.out.println("Nama: " + rekening.getFirstName() + " "+ rekening.getLastName());
             int accountId = rekening.getId();
             this.setVisible(false); 
             new Menu(accountNumber,accountId).setVisible(true); 

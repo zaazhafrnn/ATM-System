@@ -69,82 +69,67 @@ public class AccountManager {
     }
 
 
-    public void transfer(Scanner scanner) throws SQLException {
+    public void transfer(String recipientAccountNumber, double amount) throws SQLException {
 //        System.out.print("\nCari No. Rekening yang dituju: ");
-        String recipientAccountNumber = scanner.nextLine();
+//        String recipientAccountNumber = scanner.nextLine();
         
         int transactionId = dbManager.generateTransactionId();
-
         int recipientUserId = dbManager.getUserIdByAccountNumber(recipientAccountNumber);
         
-        if (recipientUserId == userId) {
-            System.out.println("\nTidak bisa melakukan transaksi ke diri sendiri. Coba lagi.");
+        if (recipientUserId == accountId) {
+            JOptionPane.showMessageDialog(null, "Tidak bisa melakukan transaksi ke diri sendiri. Coba lagi.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
-        if (recipientUserId != -1) {
-            String recipientName;
-            try {
-                recipientName = dbManager.getUserName(recipientUserId);
-            } catch (SQLException e) {
-                System.out.println("Error fetching recipient's name: " + e.getMessage());
-                return;
-            }
+        String recipientName;
+        recipientName = dbManager.getUserName(recipientUserId);
+        
+        if (amount <= 0) {
+            JOptionPane.showMessageDialog(null, "Invalid amount. Nilai tidak bisa kosong atau negatif.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        if (amount <= saldo) {
+            saldo -= amount;
+            dbManager.updateBalanceDatabase(accountId, saldo);
+            double recipientBalance = dbManager.getBalance(recipientUserId);
+            recipientBalance += amount;
+            dbManager.updateBalanceDatabase(recipientUserId, recipientBalance);
+//            System.out.println("Transfer berhasil sebesar Rp. " + amount + " transfer ke No. Rekening: " + recipientAccountNumber);
 
-            System.out.println("Nama Penerima: " + recipientName);
-
-            System.out.print("Nominal yang akan di Transfer: Rp. ");
-            double amount = scanner.nextDouble();
-            scanner.nextLine();
+            Transaksi transferToTransaction = new Transaksi(transactionId, accountId, "Transfer", amount, "Transfer kepada " + recipientName, LocalDateTime.now());
+            dbManager.addTransaction(transferToTransaction);
+            Transaksi transferFromTransaction = new Transaksi(transactionId, recipientUserId, "Transfer", amount, "Transfer dari " + dbManager.getUserName(accountId), LocalDateTime.now());
+            dbManager.addTransaction(transferFromTransaction);
             
-            if (amount <= 0) {
-                System.out.println("Nominal tidak sah. Nominal tidak boleh kosong atau negatif.");
-                return;
-            }
-            
-            
-            if (amount <= saldo) {
-                saldo -= amount;
-                dbManager.updateBalanceDatabase(accountId, saldo);
-                double recipientBalance = dbManager.getBalance(recipientUserId);
-                recipientBalance += amount;
-                dbManager.updateBalanceDatabase(recipientUserId, recipientBalance);
-                System.out.println("Transfer berhasil sebesar Rp. " + amount + " transfer ke No. Rekening: " + recipientAccountNumber);
-                
-                Transaksi transferToTransaction = new Transaksi(transactionId, accountId, "Transfer", amount, "Transfer kepada " + recipientName, LocalDateTime.now());
-                dbManager.addTransaction(transferToTransaction);
-                Transaksi transferFromTransaction = new Transaksi(transactionId, recipientUserId, "Transfer", amount, "Transfer dari " + dbManager.getUserName(accountId), LocalDateTime.now());
-                dbManager.addTransaction(transferFromTransaction);
-                
-                } else {
-                    System.out.println("Dana tidak mencukupi. Transaksi gagal");
-                }
+            JOptionPane.showMessageDialog(null, "Transfer berhasil ke No. Rekening: " + recipientAccountNumber + ". Sebesar: " + amount, "Berhasil", JOptionPane.INFORMATION_MESSAGE);
         } else {
-            System.out.println("Recipient account not found. Please try inputting the correct recipient number.");
+//            System.out.println("Dana tidak mencukupi. Transaksi gagal");
+            JOptionPane.showMessageDialog(null, "Dana tidak mencukupi. Transaksi gagal", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    public void viewTransactionHistory() {
-        System.out.println("\nTransaction History:");
-
-        try {
-            List<Transaksi> transactions = dbManager.getTransactionHistory(accountId);
-            if (transactions.isEmpty()) {
-                System.out.println("No transaction history available.");
-            } else {
-                for (Transaksi transaction : transactions) {
-                    System.out.println("Transaksi ID: " + transaction.getTransactionId());
-//                    System.out.println("Tipe Transaksi: " + transaction.getTransactionType());
-                    System.out.println("Jumlah: " + transaction.getAmount());
-                    System.out.println("Transaksi: " + transaction.getDescription());
-                    System.out.println("Tanggal: " + transaction.getTimestamp());
-                    System.out.println("------------------------------------");
-                }
-            }
-        } catch (SQLException e) {
-            System.out.println("Error fetching transaction history: " + e.getMessage());
-        }
-    }
+//    public void viewTransactionHistory() {
+//        System.out.println("\nTransaction History:");
+//
+//        try {
+//            List<Transaksi> transactions = dbManager.getTransactionHistory(accountId);
+//            if (transactions.isEmpty()) {
+//                System.out.println("No transaction history available.");
+//            } else {
+//                for (Transaksi transaction : transactions) {
+//                    System.out.println("Transaksi ID: " + transaction.getTransactionId());
+////                    System.out.println("Tipe Transaksi: " + transaction.getTransactionType());
+//                    System.out.println("Jumlah: " + transaction.getAmount());
+//                    System.out.println("Transaksi: " + transaction.getDescription());
+//                    System.out.println("Tanggal: " + transaction.getTimestamp());
+//                    System.out.println("------------------------------------");
+//                }
+//            }
+//        } catch (SQLException e) {
+//            System.out.println("Error fetching transaction history: " + e.getMessage());
+//        }
+//    }
 
     public Database getDatabase() {
         return dbManager;

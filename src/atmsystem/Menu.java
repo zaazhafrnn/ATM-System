@@ -61,6 +61,13 @@ public class Menu extends javax.swing.JFrame {
                 navigateToTransfer();
             }
         });
+        
+        jButton6.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                exitProgram();
+            }
+        });
     }
     
     private void navigateToCekSaldo() {
@@ -84,12 +91,17 @@ public class Menu extends javax.swing.JFrame {
     }
     
     private void navigateToTransfer() {
-//    TransferREK transferREK = new TransferREK(accountManager, accountNumber, accountId);
-//    transferREK.setVisible(true);
-    this.setVisible(false);
-}
+        TransferREK transferREK = new TransferREK(accountNumber, accountId);
+        transferREK.setVisible(true);
+        this.setVisible(false);
+    }
 
-
+    private void exitProgram() {
+        int response = JOptionPane.showConfirmDialog(this, "Apakah anda yakin ingin keluar?", "Exit", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        if (response == JOptionPane.YES_OPTION) {
+            System.exit(0);
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
