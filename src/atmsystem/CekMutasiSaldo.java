@@ -8,12 +8,15 @@ package atmsystem;
  *
  * @author Infinix
  */
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.List;
 import java.sql.SQLException;
+import javax.swing.table.DefaultTableCellRenderer;
 
 public class CekMutasiSaldo extends javax.swing.JFrame {
     private Database dbManager;
@@ -47,22 +50,50 @@ public class CekMutasiSaldo extends javax.swing.JFrame {
             model.setRowCount(0);
 
             if (transactions.isEmpty()) {
-//                System.out.println("No transaction history available.");
-                  JOptionPane.showMessageDialog(this, "Belum ada riwayat transaksi untuk saat ini.", "Transaksi Kosong", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Belum ada riwayat transaksi untuk saat ini.", "Transaksi Kosong", JOptionPane.ERROR_MESSAGE);
             } else {
                 for (Transaksi transaction : transactions) {
                     Object[] rowData = {
-                        transaction.getTransactionId(),
-                        transaction.getTimestamp(),
-                        transaction.getDescription(),
-                        transaction.getAmount()
+                            transaction.getTransactionId(),
+                            transaction.getTimestamp(),
+                            transaction.getDescription(),
+                            transaction.getAmount()
                     };
                     model.addRow(rowData);
                 }
+
+                // Set custom cell renderer to the "Description" column (assuming it's the 2nd column)
+                jTable1.getColumnModel().getColumn(2).setCellRenderer(new CustomTableCellRenderer());
             }
         } catch (SQLException e) {
             System.out.println("Error fetching transaction history: " + e.getMessage());
             e.printStackTrace(); 
+        }
+    }
+    
+    private class CustomTableCellRenderer extends DefaultTableCellRenderer {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+            // Get the value from the "Description" column
+            String description = table.getValueAt(row, 2).toString();
+
+            // Set the background color based on the transaction type
+            if (description.contains("Setor")) {
+                c.setBackground(Color.GREEN);
+            } else if (description.contains("Tarik")) {
+                c.setBackground(Color.RED);
+            } else if (description.contains("Transfer kepada")) {
+                c.setBackground(Color.BLUE);
+            } else if (description.contains("Transfer dari")) {
+                c.setBackground(Color.ORANGE);
+            } else {
+                // Reset to default color
+                c.setBackground(table.getBackground());
+            }
+
+            return c;
         }
     }
     

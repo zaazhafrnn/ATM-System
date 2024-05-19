@@ -65,7 +65,7 @@ public class TarikTunai extends javax.swing.JFrame {
         }
 
         this.setVisible(false);
-        new MasukanPIN(accountNumber, accountId, amount, "withdraw", null).setVisible(true);
+        new MasukanPIN(accountNumber, accountId, amount, "withdraw", null, null).setVisible(true);
 
 //        new MasukanPIN(accountNumber, accountId, amount, "withdraw").setVisible(true);
     }

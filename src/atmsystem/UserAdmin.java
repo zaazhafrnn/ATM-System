@@ -338,9 +338,9 @@ public class UserAdmin extends javax.swing.JFrame {
             clearTable();
             loadUserData();
             clearFields();
-            JOptionPane.showMessageDialog(this, "User added successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "User berhasil di tambahkan.", "Success", JOptionPane.INFORMATION_MESSAGE);
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "NIK must be a number.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "NIK harus berupa angka.", "Input Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 

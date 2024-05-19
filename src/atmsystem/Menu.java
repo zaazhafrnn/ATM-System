@@ -224,7 +224,7 @@ public class Menu extends javax.swing.JFrame {
         jLabel11.setText("TRANSFER");
 
         jLabel12.setFont(new java.awt.Font("Eras Demi ITC", 0, 20)); // NOI18N
-        jLabel12.setText("EXIT");
+        jLabel12.setText("KELUAR");
 
         jLabel9.setFont(new java.awt.Font("Eras Demi ITC", 0, 20)); // NOI18N
         jLabel9.setText("SETOR TUNAI");

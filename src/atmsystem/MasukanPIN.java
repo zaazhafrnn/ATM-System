@@ -21,6 +21,7 @@ public class MasukanPIN extends javax.swing.JFrame {
     private double amount; 
     String transactionType;
     String recipientAccountNumber;
+    String recipientName;
     private Database dbManager;
 //    private JPasswordField pinField;
 //    private JButton confirmButton;
@@ -29,12 +30,13 @@ public class MasukanPIN extends javax.swing.JFrame {
     /**
      * Creates new form Transfer2
      */
-    public MasukanPIN(String accountNumber, int accountId, double amount, String transactionType, String recipientAccountNumber) {
+    public MasukanPIN(String accountNumber, int accountId, double amount, String transactionType, String recipientAccountNumber, String recipientName) {
         this.accountNumber = accountNumber;
         this.accountId = accountId;
         this.amount = amount;
         this.transactionType = transactionType;
         this.recipientAccountNumber = recipientAccountNumber;
+        this.recipientName = recipientName;
         this.dbManager = new Database();
         
         initComponents();
@@ -42,7 +44,7 @@ public class MasukanPIN extends javax.swing.JFrame {
         jButton65.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                handleGoBack();
+                handleGoBack(transactionType);
             }
         });
         
@@ -108,10 +110,23 @@ public class MasukanPIN extends javax.swing.JFrame {
         }
     }
     
-    private void handleGoBack() {
-        this.setVisible(false); 
-//        new TarikTunai(accountNumber, accountId).setVisible(true);
+    private void handleGoBack(String transactionType) {
+        this.setVisible(false);
+        switch (transactionType) {
+            case "deposit":
+                new SetorTunai(accountNumber, accountId).setVisible(true);
+                break;
+            case "withdraw":
+                new TarikTunai(accountNumber, accountId).setVisible(true);
+                break;
+            case "transfer":
+                new Transfer(accountNumber, accountId, recipientAccountNumber, recipientName).setVisible(true);
+                break;
+            default:
+                break;
+        }
     }
+
     
     private void navigateBackToMenu() {
         this.setVisible(false); 
@@ -617,7 +632,7 @@ public class MasukanPIN extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new MasukanPIN("", 0, 0.0, "", "").setVisible(true);
+                new MasukanPIN("", 0, 0.0, "", "", "").setVisible(true);
             }
         });
     }

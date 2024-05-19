@@ -69,7 +69,7 @@ public class SetorTunai extends javax.swing.JFrame {
         }
 
         this.setVisible(false);
-        new MasukanPIN(accountNumber, accountId, amount, "deposit", null).setVisible(true);
+        new MasukanPIN(accountNumber, accountId, amount, "deposit", null, null).setVisible(true);
 
 //        new MasukanPIN(accountNumber, accountId, amount, "deposit").setVisible(true);
     }

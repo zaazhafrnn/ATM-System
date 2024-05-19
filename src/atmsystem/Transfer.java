@@ -73,7 +73,7 @@ public class Transfer extends javax.swing.JFrame {
 
 //        accountManager.transfer(recipientAccountNumber, amount);
         this.setVisible(false);
-        new MasukanPIN(accountNumber, accountId, amount, "transfer", recipientAccountNumber).setVisible(true);
+        new MasukanPIN(accountNumber, accountId, amount, "transfer", recipientAccountNumber, recipientName).setVisible(true);
 
     }
 
