@@ -32,12 +32,12 @@ public class RekeningAdmin extends javax.swing.JFrame {
         DefaultTableModel model = new DefaultTableModel();
         model.addColumn("ID");
         model.addColumn("No. Rekening");
-        model.addColumn("User ID");
+        model.addColumn("Nama");
         model.addColumn("Pin");
 
         List<Rekening> rekenings = dbManager.getAllRekenings();
         for (Rekening rekening : rekenings) {
-            model.addRow(new Object[]{rekening.getId(), rekening.getAccountNumber(), rekening.getUserId(), rekening.getPin()});
+            model.addRow(new Object[]{rekening.getId(), rekening.getAccountNumber(), rekening.getFirstName() + " " + rekening.getLastName(), rekening.getPin()});
         }
 
         jTable1.setModel(model);

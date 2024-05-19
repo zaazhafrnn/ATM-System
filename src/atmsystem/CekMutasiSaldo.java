@@ -16,7 +16,9 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.List;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import javax.swing.table.DefaultTableCellRenderer;
+import java.time.format.DateTimeFormatter;
 
 public class CekMutasiSaldo extends javax.swing.JFrame {
     private Database dbManager;
@@ -52,17 +54,20 @@ public class CekMutasiSaldo extends javax.swing.JFrame {
             if (transactions.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Belum ada riwayat transaksi untuk saat ini.", "Transaksi Kosong", JOptionPane.ERROR_MESSAGE);
             } else {
+                DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                
                 for (Transaksi transaction : transactions) {
-                    Object[] rowData = {
+                    LocalDateTime timestamp = transaction.getTimestamp();
+                        String formattedDateTime = timestamp.format(outputFormatter);
+                        Object[] rowData = {
                             transaction.getTransactionId(),
-                            transaction.getTimestamp(),
+                            formattedDateTime,
                             transaction.getDescription(),
                             transaction.getAmount()
-                    };
-                    model.addRow(rowData);
+                        };
+                        model.addRow(rowData);
                 }
 
-                // Set custom cell renderer to the "Description" column (assuming it's the 2nd column)
                 jTable1.getColumnModel().getColumn(2).setCellRenderer(new CustomTableCellRenderer());
             }
         } catch (SQLException e) {
