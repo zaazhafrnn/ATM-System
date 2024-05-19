@@ -1114,7 +1114,7 @@ public class TransferREK extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new TransferREK().setVisible(true);
+                new TransferREK("", 0).setVisible(true);
             }
         });
     }

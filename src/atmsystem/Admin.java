@@ -171,12 +171,12 @@ public class Admin {
                 return;
         }
 
-        boolean success = dbManager.updateUser(userToEdit);
-        if (success) {
-            System.out.println("Data User berhasil di edit.");
-        } else {
-            System.out.println("Failed to update user information.");
-        }
+//        boolean success = dbManager.updateUser(userToEdit);
+//        if (success) {
+//            System.out.println("Data User berhasil di edit.");
+//        } else {
+//            System.out.println("Failed to update user information.");
+//        }
     }
 
     private void deleteUser() {
@@ -240,12 +240,12 @@ public class Admin {
         int newPin = scanner.nextInt();
         scanner.nextLine(); 
 
-        boolean success = dbManager.updateRekeningPin(rekeningToEdit.getId(), newPin);
-        if (success) {
-            System.out.println("PIN berhasil diperbarui.");
-        } else {
-            System.out.println("Failed to update rekening PIN.");
-        }
+//        boolean success = dbManager.updateRekeningPin(rekeningToEdit.getId(), newPin);
+//        if (success) {
+//            System.out.println("PIN berhasil diperbarui.");
+//        } else {
+//            System.out.println("Failed to update rekening PIN.");
+//        }
     }
     
     private void deleteRekening() {

@@ -872,7 +872,7 @@ public class Transfer extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Transfer().setVisible(true);
+                new Transfer("", 0, "", "").setVisible(true);
             }
         });
     }

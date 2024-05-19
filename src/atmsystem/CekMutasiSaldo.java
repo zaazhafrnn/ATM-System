@@ -564,7 +564,7 @@ public class CekMutasiSaldo extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new CekMutasiSaldo().setVisible(true);
+                new CekMutasiSaldo("", 0).setVisible(true);
             }
         });
     }

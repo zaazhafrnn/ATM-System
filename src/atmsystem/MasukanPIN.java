@@ -617,7 +617,7 @@ public class MasukanPIN extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new MasukanPIN().setVisible(true);
+                new MasukanPIN("", 0, 0.0, "", "").setVisible(true);
             }
         });
     }

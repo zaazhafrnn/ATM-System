@@ -22,10 +22,10 @@ public class SetorTunai extends javax.swing.JFrame {
     private AccountManager accountManager;
 
     /** Creates new form SetorTunai */
-    public SetorTunai(String accountNumber, int accountId, String recipientAccountNumber) {
+    public SetorTunai(String accountNumber, int accountId) {
         this.accountNumber = accountNumber;
         this.accountId = accountId;
-        this.recipientAccountNumber = recipientAccountNumber;
+//        this.recipientAccountNumber = recipientAccountNumber;
         dbManager = new Database();
         
         // Retrieve the account details
@@ -69,7 +69,7 @@ public class SetorTunai extends javax.swing.JFrame {
         }
 
         this.setVisible(false);
-        new MasukanPIN(accountNumber, accountId, amount, recipientAccountNumber, "transfer").setVisible(true);
+        new MasukanPIN(accountNumber, accountId, amount, "deposit", null).setVisible(true);
 
 //        new MasukanPIN(accountNumber, accountId, amount, "deposit").setVisible(true);
     }
@@ -584,7 +584,7 @@ public class SetorTunai extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new SetorTunai().setVisible(true);
+                new SetorTunai("", 0).setVisible(true);
             }
         });
     }

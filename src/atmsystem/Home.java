@@ -40,19 +40,19 @@ public class Home {
 
             switch (choice) {
                 case 1:
-                    account.checkBalance();
+//                    account.checkBalance();
                     break;
                 case 2:
-                    account.deposit(scanner);
+//                    account.deposit(scanner);
                     break;
                 case 3:
-                    account.withdraw(scanner);
+//                    account.withdraw(scanner);
                     break;
                 case 4:
-                    account.transfer(scanner);
+//                    account.transfer(scanner);
                     break;
                 case 5:
-                    account.viewTransactionHistory();
+//                    account.viewTransactionHistory();
                     break;
                 case 6:
                     System.out.println("Terimakasih telah berkunjung! Sampai Ketemu lagi.");

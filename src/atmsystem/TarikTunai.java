@@ -23,10 +23,10 @@ public class TarikTunai extends javax.swing.JFrame {
     /**
      * Creates new form TarikTunai
      */
-    public TarikTunai(String accountNumber, int accountId, String recipientAccountNumber) {
+    public TarikTunai(String accountNumber, int accountId) {
         this.accountNumber = accountNumber;
         this.accountId = accountId;
-        this.recipientAccountNumber = recipientAccountNumber;
+//        this.recipientAccountNumber = recipientAccountNumber;
         dbManager = new Database();
         
         Rekening rekening = dbManager.getRekeningByAccountNumber(accountNumber);
@@ -65,7 +65,7 @@ public class TarikTunai extends javax.swing.JFrame {
         }
 
         this.setVisible(false);
-        new MasukanPIN(accountNumber, accountId, amount, recipientAccountNumber, "transfer").setVisible(true);
+        new MasukanPIN(accountNumber, accountId, amount, "withdraw", null).setVisible(true);
 
 //        new MasukanPIN(accountNumber, accountId, amount, "withdraw").setVisible(true);
     }
@@ -568,7 +568,7 @@ public class TarikTunai extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new TarikTunai().setVisible(true);
+                new TarikTunai("", 0).setVisible(true);
             }
         });
     }

@@ -32,7 +32,7 @@ public class Login extends javax.swing.JFrame {
         try {
             pin = Integer.parseInt(pinText);
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "PIN harus angka.", "Invalid PIN", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "PIN harus berupa angka.", "Invalid PIN", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -48,7 +48,7 @@ public class Login extends javax.swing.JFrame {
             this.setVisible(false); 
             new Menu(accountNumber,accountId).setVisible(true); 
         } else {
-            JOptionPane.showMessageDialog(this, "Authentication failed. Please check your account number and PIN.", "Login Failed", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "PIN atau Nomer Rekening salah. Silahkan coba lagi", "Login Gagal", JOptionPane.ERROR_MESSAGE);
         }
     }
     
