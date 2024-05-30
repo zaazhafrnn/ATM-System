@@ -27,8 +27,8 @@ public class Database {
 
     private void connectDatabase() {
         String url = "jdbc:mysql://localhost:3306/atm_database";
-        String user = "atm_user";
-        String password = "root";
+        String user = "user-baru";
+        String password = "password";
         try {
             connection = DriverManager.getConnection(url, user, password);
         } catch (SQLException e) {
@@ -199,8 +199,9 @@ public class Database {
                 String lastName = rs.getString("nama_belakang");
                 String address = rs.getString("alamat");
                 String phone = rs.getString("no_telp");
+                String password = rs.getString("password");
 
-                User user = new User(id, nik, firstName, lastName, address, phone);
+                User user = new User(id, nik, firstName, lastName, address, phone, password);
                 users.add(user);
             }
         } catch (SQLException e) {
@@ -209,13 +210,13 @@ public class Database {
         return users;
     }
 
-    public boolean addNewUser(int nik, String firstName, String lastName, String address, String phone) {
+    public boolean addNewUser(int nik, String firstName, String lastName, String address, String phone, String password) {
         if (isNikExists(nik)) {
             System.out.println("\nNIK sudah ada. Gagal menambahkan user.");
             return false;
         }
 
-        String query = "INSERT INTO users (nik, nama_depan, nama_belakang, alamat, no_telp) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO users (nik, nama_depan, nama_belakang, alamat, no_telp, password) VALUES (?, ?, ?, ?, ?, ?)";
         
         try (PreparedStatement pstmt = connection.prepareStatement(query)) {
             pstmt.setInt(1, nik);
@@ -223,6 +224,7 @@ public class Database {
             pstmt.setString(3, lastName);
             pstmt.setString(4, address);
             pstmt.setString(5, phone);
+            pstmt.setString(6, password);
             
             int rowsAffected = pstmt.executeUpdate();
             return rowsAffected > 0;
@@ -232,8 +234,8 @@ public class Database {
         }
     }
     
-    public void updateUser(int id, int nik, String firstName, String lastName, String address, String phone) {
-        String query = "UPDATE users SET nama_depan = ?, nama_belakang = ?, alamat = ?, no_telp = ? WHERE id = ?";
+    public void updateUser(int id, int nik, String firstName, String lastName, String address, String phone, String password) {
+        String query = "UPDATE users SET nama_depan = ?, nama_belakang = ?, alamat = ?, no_telp = ?, password = ? WHERE id = ?";
 
         try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 //            pstmt.setInt(1, nik);
@@ -241,7 +243,8 @@ public class Database {
             pstmt.setString(2, lastName);
             pstmt.setString(3, address);
             pstmt.setString(4, phone);
-            pstmt.setInt(5, id);
+            pstmt.setString(5, password);
+            pstmt.setInt(6, id);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Error updating user: " + e.getMessage());
@@ -274,8 +277,9 @@ public class Database {
                     String lastName = rs.getString("nama_belakang");
                     String address = rs.getString("alamat");
                     String phone = rs.getString("no_telp");
+                    String password = rs.getString("password");
 
-                    return new User(id, nik, firstName, lastName, address, phone);
+                    return new User(id, nik, firstName, lastName, address, phone, password);
                 }
             }
         } catch (SQLException e) {

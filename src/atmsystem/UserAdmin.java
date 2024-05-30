@@ -32,13 +32,14 @@ public class UserAdmin extends javax.swing.JFrame {
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         
         for (User user : users) {
-            Object[] row = new Object[6];
+            Object[] row = new Object[7];
             row[0] = user.getId();
             row[1] = user.getNik();
             row[2] = user.getFirstName();
             row[3] = user.getLastName();
             row[4] = user.getAddress();
             row[5] = user.getPhone();
+            row[6] = user.getPassword();
             model.addRow(row);
         }
     }
@@ -49,6 +50,7 @@ public class UserAdmin extends javax.swing.JFrame {
         jTextField1.setText("");
         jTextField5.setText("");
         jTextField3.setText("");
+        jTextField7.setText("");
 //        nikField.setText("");
 //        firstNameField.setText("");
 //        lastNameField.setText("");
@@ -91,6 +93,8 @@ public class UserAdmin extends javax.swing.JFrame {
         jButton4 = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
         jButton5 = new javax.swing.JButton();
+        jTextField7 = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -133,7 +137,7 @@ public class UserAdmin extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Id", "NIK", "Nama Depan", "Nama Belakang", "Alamat", "No Telpon"
+                "Id", "NIK", "Nama Depan", "Nama Belakang", "Alamat", "No Telpon", "Password"
             }
         ));
         jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -187,6 +191,14 @@ public class UserAdmin extends javax.swing.JFrame {
             }
         });
 
+        jTextField7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField7ActionPerformed(evt);
+            }
+        });
+
+        jLabel7.setText("Password:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -215,7 +227,12 @@ public class UserAdmin extends javax.swing.JFrame {
                                     .addComponent(jTextField1)
                                     .addComponent(jTextField4, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
                                     .addComponent(jTextField5, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
-                                    .addComponent(jTextField6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)))))
+                                    .addComponent(jTextField6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel7)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGap(146, 146, 146)
+                                    .addComponent(jTextField7, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)))))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(76, 76, 76)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -267,6 +284,10 @@ public class UserAdmin extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(14, 14, 14)
@@ -310,6 +331,7 @@ public class UserAdmin extends javax.swing.JFrame {
         jTextField1.setText(model.getValueAt(selectedRow, 3).toString());
         jTextField5.setText(model.getValueAt(selectedRow, 4).toString());
         jTextField3.setText(model.getValueAt(selectedRow, 5).toString());
+        jTextField7.setText(model.getValueAt(selectedRow, 6).toString());
         
     }//GEN-LAST:event_jTable1MouseClicked
 
@@ -319,9 +341,10 @@ public class UserAdmin extends javax.swing.JFrame {
         String lastName = jTextField1.getText();
         String address = jTextField5.getText();
         String phone = jTextField3.getText();
+        String password = jTextField7.getText();
 
         // Validate inputs
-        if (nik.isEmpty() || firstName.isEmpty() || lastName.isEmpty() || address.isEmpty() || phone.isEmpty()) {
+        if (nik.isEmpty() || firstName.isEmpty() || lastName.isEmpty() || address.isEmpty() || phone.isEmpty() || password.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Pastikan semua data terisi.", "Input Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -334,7 +357,7 @@ public class UserAdmin extends javax.swing.JFrame {
                 return;
             }
             
-            dbManager.addNewUser(nikInt, firstName, lastName, address, phone);
+            dbManager.addNewUser(nikInt, firstName, lastName, address, phone, password);
             clearTable();
             loadUserData();
             clearFields();
@@ -357,6 +380,7 @@ public class UserAdmin extends javax.swing.JFrame {
             model.setValueAt(jTextField1.getText(), i, 3);
             model.setValueAt(jTextField5.getText(), i, 4);
             model.setValueAt(jTextField3.getText(), i, 5);
+            model.setValueAt(jTextField7.getText(), i, 6);
             
             int id = (int) model.getValueAt(i, 0);
             int nik = Integer.parseInt(jTextField6.getText());
@@ -364,8 +388,9 @@ public class UserAdmin extends javax.swing.JFrame {
             String lastName = jTextField1.getText();
             String address = jTextField5.getText();
             String phone = jTextField3.getText();
+            String password = jTextField7.getText();
 
-            dbManager.updateUser(id, nik, firstName, lastName, address, phone);
+            dbManager.updateUser(id, nik, firstName, lastName, address, phone, password);
             
             clearFields();
             jTable1.clearSelection();
@@ -407,6 +432,10 @@ public class UserAdmin extends javax.swing.JFrame {
         AdminOption adminOption = new AdminOption();
         adminOption.setVisible(true);
     }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jTextField7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField7ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField7ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -455,6 +484,7 @@ public class UserAdmin extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JTextField jTextField1;
@@ -462,5 +492,6 @@ public class UserAdmin extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField jTextField5;
     private javax.swing.JTextField jTextField6;
+    private javax.swing.JTextField jTextField7;
     // End of variables declaration//GEN-END:variables
 }
